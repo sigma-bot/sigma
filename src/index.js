@@ -1,8 +1,8 @@
 const Discord = require('discord.js');
-const { prefix, token } = require("./config.json");
+const { prefix, token } = require('../config/config.json');
 
 const Sigma = new Discord.Client();
 
-Sigma.on('ready', () => console.log("Sigma is ready!"));
+Sigma.on('ready', () => console.log('Sigma is ready!'));
 
 Sigma.login(token).catch(err => console.log(err));
