@@ -40,7 +40,6 @@ function apod(message) {
 }
 
 function mars(message) {
-	// TODO: improve error messages for the NASA API calls
 	axios.get('https://api.nasa.gov/mars-photos/api/v1/manifests/curiosity?api_key=DEMO_KEY')
 		.then(response => {
 			const maxDate = response.data.photo_manifest.max_date;
@@ -60,7 +59,18 @@ function mars(message) {
 
 					message.channel.send(embed);
 				})
-				.catch(err => console.log('nasa api error: photos'));
+				.catch(err => nasaErrorHandler(err, message));
 		})
-		.catch(err => console.log('nasa api error: date'));
+		.catch(err => nasaErrorHandler(err, message));
+}
+
+function nasaErrorHandler(error, message) {
+	if (error.response.status === 429) {
+		const embed = Discord.MessageEmbed()
+			.setColor('#2a3d92')
+			.setTitle('Error')
+			.setDescription('There were too many requests, try again later.');
+
+		message.channel.send(embed);
+	}
 }
