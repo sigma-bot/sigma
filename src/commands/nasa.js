@@ -71,13 +71,12 @@ function apod(message, date) {
 				dateOfPicture.setDate(dateOfPicture.getDate() - 1);
 				apod(message, dateOfPicture);
 			} else {
-				console.log(err);
+				nasaErrorHandler(err, message);
 			}
 		});
 }
 
 function mars(message) {
-	// TODO: improve error messages for the NASA API calls
 	axiosInstance.get(`${pathMars}/manifests/curiosity`)
 		.then(response => {
 			const maxDate = response.data.photo_manifest.max_date;
@@ -97,9 +96,9 @@ function mars(message) {
 
 					message.channel.send(embed);
 				})
-				.catch(err => console.log('nasa api error: photos'));
+				.catch(err => nasaErrorHandler(err, message));
 		})
-		.catch(err => console.log('nasa api error: date'));
+		.catch(err => nasaErrorHandler(err, message));
 }
 
 function getDateString(date) {
@@ -108,4 +107,15 @@ function getDateString(date) {
 	const year = date.getFullYear();
 
 	return `${year}-${month > 9 ? month : '0' + month}-${day > 9 ? day : '0' + day}`;
+}
+
+function nasaErrorHandler(error, message) {
+	if (error.response.status === 429) {
+		const embed = Discord.MessageEmbed()
+			.setColor('#2a3d92')
+			.setTitle('Error')
+			.setDescription('There were too many requests, try again later.');
+
+		message.channel.send(embed);
+	}
 }
