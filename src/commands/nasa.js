@@ -41,12 +41,15 @@ module.exports = {
 	}
 };
 
-function apod(message) {
-	// TODO: if there is no picture for the current day, retrieve the one from the day before
-	axiosInstance.get(`${pathApod}`)
+function apod(message, date) {
+	const today = new Date();
+	const dateOfPicture = date ? date : today;
+
+	axiosInstance.get(`${pathApod}?date=${getDateString(dateOfPicture)}`)
 		.then(response => {
 			const readMore = '...\nRead more with this link: https://apod.nasa.gov/apod';
 			let explaination = response.data.explanation;
+
 			if (explaination.length > 1024) {
 				explaination = explaination.substr(0, 1024 - readMore.length) + readMore;
 			}
@@ -63,7 +66,14 @@ function apod(message) {
 			}
 
 			message.channel.send(embed);
-		}).catch(err => console.log(err));
+		}).catch(err => {
+			if (err.response.status === 404) {
+				dateOfPicture.setDate(dateOfPicture.getDate() - 1);
+				apod(message, dateOfPicture);
+			} else {
+				console.log(err);
+			}
+		});
 }
 
 function mars(message) {
@@ -90,4 +100,12 @@ function mars(message) {
 				.catch(err => console.log('nasa api error: photos'));
 		})
 		.catch(err => console.log('nasa api error: date'));
+}
+
+function getDateString(date) {
+	const day = date.getDate();
+	const month = date.getMonth() + 1;
+	const year = date.getFullYear();
+
+	return `${year}-${month > 9 ? month : '0' + month}-${day > 9 ? day : '0' + day}`;
 }
