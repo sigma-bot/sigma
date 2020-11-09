@@ -1,6 +1,24 @@
 const Discord = require('discord.js');
 const axios = require('axios');
 
+const axiosInstance = axios.create({
+	baseURL: 'https://api.nasa.gov'
+});
+
+axiosInstance.interceptors.request.use(
+	(config) => {
+		config.url += config.url.includes('?') ? '&' : '?';
+		config.url += 'api_key=DEMO_KEY';
+		return config;
+	},
+	(error) => {
+		return Promise.reject(error);
+	}
+);
+
+const pathApod = '/planetary/apod';
+const pathMars = '/mars-photos/api/v1';
+
 module.exports = {
 	name: 'nasa',
 	description: 'Different commands to fetch data about space from the NASA.',
@@ -23,28 +41,47 @@ module.exports = {
 	}
 };
 
-function apod(message) {
-	// TODO: if there is no picture for the current day, retrieve the one from the day before
-	axios.get('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY')
+function apod(message, date) {
+	const today = new Date();
+	const dateOfPicture = date ? date : today;
+
+	axiosInstance.get(`${pathApod}?date=${getDateString(dateOfPicture)}`)
 		.then(response => {
+			const readMore = '...\nRead more with this link: https://apod.nasa.gov/apod';
+			let explaination = response.data.explanation;
+
+			if (explaination.length > 1024) {
+				explaination = explaination.substr(0, 1024 - readMore.length) + readMore;
+			}
+
 			const embed = new Discord.MessageEmbed()
 				.setColor('#2a3d92')
 				.setTitle('Astronomy Picture of the Day')
 				.addField('Title', response.data.title)
-				.addField('Explanation', response.data.explanation)
-				.setImage(response.data.hdurl)
-				.setFooter(response.data.copyright);
+				.addField('Explanation', explaination)
+				.setImage(response.data.hdurl);
+
+			if (response.data.copyright) {
+				embed.setFooter(response.data.copyright);
+			}
 
 			message.channel.send(embed);
-		}).catch(err => console.log(err));
+		}).catch(err => {
+			if (err.response.status === 404) {
+				dateOfPicture.setDate(dateOfPicture.getDate() - 1);
+				apod(message, dateOfPicture);
+			} else {
+				console.log(err);
+			}
+		});
 }
 
 function mars(message) {
 	// TODO: improve error messages for the NASA API calls
-	axios.get('https://api.nasa.gov/mars-photos/api/v1/manifests/curiosity?api_key=DEMO_KEY')
+	axiosInstance.get(`${pathMars}/manifests/curiosity`)
 		.then(response => {
 			const maxDate = response.data.photo_manifest.max_date;
-			axios.get(`https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date=${maxDate}&api_key=DEMO_KEY`)
+			axiosInstance.get(`${pathMars}/rovers/curiosity/photos?earth_date=${maxDate}`)
 				.then(response => {
 					const randomIndex = Math.floor(Math.random() * response.data.photos.length);
 					const randomPhoto = response.data.photos[randomIndex];
@@ -63,4 +100,12 @@ function mars(message) {
 				.catch(err => console.log('nasa api error: photos'));
 		})
 		.catch(err => console.log('nasa api error: date'));
+}
+
+function getDateString(date) {
+	const day = date.getDate();
+	const month = date.getMonth() + 1;
+	const year = date.getFullYear();
+
+	return `${year}-${month > 9 ? month : '0' + month}-${day > 9 ? day : '0' + day}`;
 }
