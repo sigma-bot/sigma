@@ -71,7 +71,7 @@ function apod(message, date) {
 				dateOfPicture.setDate(dateOfPicture.getDate() - 1);
 				apod(message, dateOfPicture);
 			} else {
-				console.log(err);
+				nasaErrorHandler(err, message);
 			}
 		});
 }
