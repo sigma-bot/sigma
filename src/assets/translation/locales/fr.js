@@ -69,7 +69,8 @@ module.exports = {
     commandTicTacToe: {
         description: 'Jouer au morpion',
         errors: {
-            twoPlayers: 'S\'il te plaît, taggue 2 joueurs.'
+            twoPlayers: 'S\'il te plaît, taggue 2 joueurs.',
+            noBotAllowed: 'Les joueurs ne peuvent être des bots.'
         },
         notifications: {
             turn: 'C\'est au tour de {{ userPlaying }} ! ({{ sign }})',

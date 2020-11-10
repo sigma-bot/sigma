@@ -23,7 +23,10 @@ module.exports = {
 		if (args.length >= 2) {
 			user1 = message.mentions.users.get(args[0].substr(3, args[0].length - 4));
 			user2 = message.mentions.users.get(args[1].substr(3, args[1].length - 4));
+
+			if (user1.bot || user2.bot) return message.reply(translate('commandTicTacToe.errors.noBotAllowed'));
 			if (!user1 || !user2) return message.reply(translate('commandTicTacToe.errors.twoPlayers'));
+
 			user1.sign = cross;
 			user2.sign = circle;
 
