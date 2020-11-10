@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const axios = require('axios');
+const translate = require('../assets/translation/translate');
 
 const axiosInstance = axios.create({
 	baseURL: 'https://api.nasa.gov'
@@ -21,7 +22,7 @@ const pathMars = '/mars-photos/api/v1';
 
 module.exports = {
 	name: 'nasa',
-	description: 'Different commands to fetch data about space from the NASA.',
+	description: translate('commandNasa.description'),
 	args: true,
 	usage: '<apod|mars>',
 	guildOnly: false,
@@ -36,7 +37,7 @@ module.exports = {
 				mars(message);
 				break;
 			default:
-				return message.reply(`You must give an instruction among \`${this.usage}\``);
+				return message.reply(translate('commandNasa.errors.invalidUsage', { usage: this.usage }));
 		}
 	}
 };
@@ -47,7 +48,7 @@ function apod(message, date) {
 
 	axiosInstance.get(`${pathApod}?date=${getDateString(dateOfPicture)}`)
 		.then(response => {
-			const readMore = '...\nRead more with this link: https://apod.nasa.gov/apod';
+			const readMore = translate('commandNasa.apod.fields.explaination.readMore');
 			let explaination = response.data.explanation;
 
 			if (explaination.length > 1024) {
@@ -56,9 +57,9 @@ function apod(message, date) {
 
 			const embed = new Discord.MessageEmbed()
 				.setColor('#2a3d92')
-				.setTitle('Astronomy Picture of the Day')
-				.addField('Title', response.data.title)
-				.addField('Explanation', explaination)
+				.setTitle(translate('commandNasa.apod.titleEmbed'))
+				.addField(translate('commandNasa.apod.fields.titlePicture.title'), response.data.title)
+				.addField(translate('commandNasa.apod.fields.explaination.title'), explaination)
 				.setImage(response.data.hdurl);
 
 			if (response.data.copyright) {
@@ -86,11 +87,11 @@ function mars(message) {
 					const randomPhoto = response.data.photos[randomIndex];
 					const embed = new Discord.MessageEmbed()
 						.setColor('#2a3d92')
-						.setTitle('Photo of Mars recently taken by Curiosity')
+						.setTitle(translate('commandNasa.mars.titleEmbed'))
 						.addFields(
-							{ name: 'Rover', value: randomPhoto.rover.name, inline: true },
-							{ name: 'Earth date', value: randomPhoto.earth_date, inline: true },
-							{ name: 'Camera', value: randomPhoto.camera.full_name, inline: true },
+							{ name: translate('commandNasa.mars.fields.rover.title'), value: randomPhoto.rover.name, inline: true },
+							{ name: translate('commandNasa.mars.fields.earthDate.title'), value: randomPhoto.earth_date, inline: true },
+							{ name: translate('commandNasa.mars.fields.camera.title'), value: randomPhoto.camera.full_name, inline: true },
 						)
 						.setImage(randomPhoto.img_src);
 
@@ -113,8 +114,8 @@ function nasaErrorHandler(error, message) {
 	if (error.response.status === 429) {
 		const embed = Discord.MessageEmbed()
 			.setColor('#2a3d92')
-			.setTitle('Error')
-			.setDescription('There were too many requests, try again later.');
+			.setTitle(translate('commandNasa.errors.error'))
+			.setDescription(translate('commandNasa.eoors.tooManyRequests'));
 
 		message.channel.send(embed);
 	}
