@@ -1,3 +1,5 @@
+const translate = require('../assets/translation/translate');
+
 const blank = ':white_large_square:';
 const cross = ':regional_indicator_x:';
 const circle = ':o2:';
@@ -12,7 +14,7 @@ let userPlaying;
 
 module.exports = {
 	name: 'tictactoe',
-	description: 'Play a game of tic-tac-toe',
+	description: translate('commandTicTacToe.description'),
 	args: true,
 	usage: '<user1> <user2>',
 	guildOnly: true,
@@ -21,13 +23,13 @@ module.exports = {
 		if (args.length >= 2) {
 			user1 = message.mentions.users.get(args[0].substr(3, args[0].length - 4));
 			user2 = message.mentions.users.get(args[1].substr(3, args[1].length - 4));
-			if (!user1 || !user2) return message.reply('Please tag exactly 2 people.');
+			if (!user1 || !user2) return message.reply(translate('commandTicTacToe.errors.twoPlayers'));
 			user1.sign = cross;
 			user2.sign = circle;
 
 			start(message, sigma);
 		} else {
-			return message.reply('Please tag exactly 2 people.');
+			return message.reply(translate('commandTicTacToe.errors.twoPlayers'));
 		}
 	}
 };
@@ -45,7 +47,7 @@ function start(message, sigma) {
 	userPlaying = Math.random() < 0.5 ? user1 : user2
 
 	// Message to say whose turn it is
-	message.channel.send(`It's ${userPlaying}'s turn! (${userPlaying.sign})`)
+	message.channel.send(translate('commandTicTacToe.notifications.turn', { userPlaying: userPlaying, sign: userPlaying.sign }))
 		.then(message => userMessage = message);
 
 	// Message with the grid and the reactions as controls
@@ -89,13 +91,13 @@ function update(emoji, gridArray, gridMessage, userMessage) {
 
 		if (getGameState(gridArray) === 'win') {
 			gridMessage.reactions.removeAll().catch(err => console.log(err));
-			return userMessage.edit(`Game is over and ${userPlaying} (${userPlaying.sign}) won!`).catch(err => console.log(err));
+			return userMessage.edit(translate('commandTicTacToe.notifications.lost', { userPlaying: userPlaying, sign: userPlaying.sign })).catch(err => console.log(err));
 		} else if (getGameState(gridArray) === 'full') {
 			gridMessage.reactions.removeAll().catch(err => console.log(err));
-			return userMessage.edit(`Game is over and nobody won!`).catch(err => console.log(err));
+			return userMessage.edit(translate('commandTicTacToe.notifications.nobodyWon')).catch(err => console.log(err));
 		} else {
 			userPlaying = userPlaying.id === user1.id ? user2 : user1;
-			userMessage.edit(`It's ${userPlaying}'s turn! (${userPlaying.sign})`).catch(err => console.log(err));
+			userMessage.edit(translate('commandTicTacToe.notifications.turn', { userPlaying: userPlaying, sign: userPlaying.sign })).catch(err => console.log(err));
 		}
 	}
 }
@@ -103,9 +105,9 @@ function update(emoji, gridArray, gridMessage, userMessage) {
 function getGameState(gridArray) {
 	let gridFull = true;
 
-	for(let i = 0; i < gridArray.length; i++) {
+	for (let i = 0; i < gridArray.length; i++) {
 		// Checks if the grid is full and nobody won
-		for(let j = 0; j < gridArray[i].length; j++) {
+		for (let j = 0; j < gridArray[i].length; j++) {
 			if (gridArray[i][j] === blank) {
 				gridFull = false;
 			}
