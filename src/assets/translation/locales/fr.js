@@ -21,11 +21,11 @@ module.exports = {
             notInVoiceChannelForListenning: 'Tu dois être dans un salon vocal pour écouter de la musique !',
             notInVoiceChannelForSkipping: 'Tu dois être dans un salon vocal pour passer la musique !',
             notInVoiceChannelForStopping: 'Tu dois être dans un salon vocal pour arrêter la musique !',
-            noPermission: 'J\' ai besoin des permissions pour rejoindre et parler dans ton salon vocal !',
+            noPermission: 'J\'ai besoin des permissions pour rejoindre et parler dans ton salon vocal !',
             noInstruction: 'Tu dois donner une instruction parmi \`play|skip|stop\`',
             noSong: 'Il n\'y a plus de musiques que je pourrais passer !',
-            lastSong: 'Tu écoute actuellement la dernière musique !',
-            noMusic: 'Je ne joue pas de musique !'
+            lastSong: 'Tu écoutes actuellement la dernière musique !',
+            noMusic: 'Je ne joue pas de musique actuellement !'
         },
         notifications: {
             play: 'Lancement de la musique : **{{ song }}**',
@@ -55,7 +55,7 @@ module.exports = {
             titleEmbed: 'Photo de Mars prise récemment par Curiosity',
             fields: {
                 rover: {
-                    title: 'Rover'
+                    title: 'Robot d\'exploration'
                 },
                 earthDate: {
                     title: 'Date terrestre'
@@ -69,13 +69,13 @@ module.exports = {
     commandTicTacToe: {
         description: 'Jouer au morpion',
         errors: {
-            twoPlayers: 'S\'il te plaît, taggue 2 joueurs.',
-            noBotAllowed: 'Les joueurs ne peuvent être des bots.'
+            twoPlayers: 'S\'il te plaît, mentionne 2 joueurs.',
+            noBotAllowed: 'Les joueurs ne peuvent être des bots !'
         },
         notifications: {
             turn: 'C\'est au tour de {{ userPlaying }} ! ({{ sign }})',
             lost: 'La partie est finie et {{ userPlaying }} ({{ sign }}) a gagné !',
-            nobodyWon: 'La partie est finie et personne n\'a gagné !'
+            nobodyWon: 'La partie est finie et personne n\'a gagné...'
         }
     }
 };

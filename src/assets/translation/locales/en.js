@@ -70,7 +70,7 @@ module.exports = {
         description: 'Play a game of tic-tac-toe',
         errors: {
             twoPlayers: 'Please tag exactly 2 people.',
-            noBotAllowed: 'The users must not be bots.'
+            noBotAllowed: 'The users must not be bots...'
         },
         notifications: {
             turn: 'It\'s {{ userPlaying }}\'s turn! ({{ sign }})',
